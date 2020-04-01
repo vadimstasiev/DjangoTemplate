@@ -1,8 +1,5 @@
 ## Setup
 - setup venv
-- folders
-	- backend
-	- frontend
 - `pip install django`
 - `django-admin startproject template`
 - Install plugins:
