@@ -45,9 +45,44 @@
 	### Create and Install an app
 	`python manage.py startapp name_of_the_app`
 	- Go to the settings (src/template/settings.py)
-		```
+		```py
 		Installed_APPS = [
 			...
 			'name_of_the_app',
 		]
 		```
+	### Setting up the Django Rest Framework
+	Install:
+	```
+	$ pip install djangorestframework
+	$ pip install markdown       # Markdown support for the browsable API.
+	$ pip install django-filter  # Filtering support
+	```
+	Add the rest framework to the installed apps (in the settings file at src/template/settings.py):
+	```py
+	INSTALLED_APPS = [
+	    ...
+	    'rest_framework',
+	]
+	```
+	Also in the settings, add the global settings for the REST framework API:
+	```py
+	REST_FRAMEWORK = {
+	    # Use Django's standard `django.contrib.auth` permissions,
+	    # or allow read-only access for unauthenticated users.
+	    'DEFAULT_PERMISSION_CLASSES': [
+	        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+	    ]
+	}
+	```
+	
+	Then add it to the urls (in the urls file at src/template/urls.py):
+	```py
+	from django.urls import path, include # don't forget to add include
+	urlpatterns = [
+		path('admin/', admin.site.urls),
+		path('api-auth/', include('rest_framework.urls'))
+	]
+	```
+	
+	
