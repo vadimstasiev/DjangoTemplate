@@ -72,9 +72,13 @@
 	    # Use Django's standard `django.contrib.auth` permissions,
 	    # or allow read-only access for unauthenticated users.
 	    'DEFAULT_PERMISSION_CLASSES': [
-	        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+	        # 'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+	        'rest_framework.permissions.AllowAny' # This may need to be changed back to the above, later on
 	    ]
 	}
+	# Also add the following to allow your React app at the front end to receive 
+	# JSON at the front end without throwing a CORS error
+	CORS_ORIGIN_ALLOW_ALL = True
 	```
 	
 	Then add it to the urls (in the urls file at src/template/urls.py):
@@ -110,7 +114,7 @@
 	admin.site.register(Article)
 	```
 	Don't forget to create super-user to access /admin in the Browser: `python manage.py createsuperuser`.
-## The next step
+## The next step - Serializers and Generic Views
 The next step consists of getting the rest framework to convert JSON data into a model and vice versa, for that we'll be using [serializers ](https://www.django-rest-framework.org/api-guide/serializers/). We'll be using the `mpapp` app for that.
 Within the `myapp` create a folder `api` with an empty __init__.py file, and the following files.
 - myapp
@@ -128,7 +132,7 @@ class  ArticleSerializer(serializers.ModelSerializer):
 		model = Article
 		fields = ('title', 'content')
 ```
-This ArticleSerializer is to be used in a view. We're going to use some generic views in this example.
+This ArticleSerializer is to be used in a view. We're going to use some [generic views](https://www.django-rest-framework.org/api-guide/generic-views/) in this example.
 > views.py (src/myapp/api/views.py)
 ```py
 from .serializers import ArticleSerializer
@@ -214,4 +218,58 @@ from rest_framework import viewsets
 class ArticleViewSet(viewsets.ModelViewSet):
     serializer_class = ArticleSerializer
     queryset = Article.objects.all()
+```
+## Implemention of Sessions
+Notice: From here on, this becomes very specific and not very explanatory, the purpose here will be to implement sessions as quickly as possible.
+In this example we'll be implementing sessions with [django-rest-auth](https://django-rest-auth.readthedocs.io/en/latest/installation.html) which essentially takes the login methods that are provided by Django **allauth** and converts them to an API.
+### Installation
+- Start off by installing the package:
+	`pip install django-rest-auth`
+- Add it to the installed apps (in settings.py):
+	```py
+	INSTALLED_APPS = [
+		...
+		'rest_framework',
+	    'rest_framework.authtoken',
+	    'rest_auth'
+	    ...
+	]
+	```
+- Add it to the urls (src/template/urls.py):
+	```py
+	urlpatterns = [
+		...
+	    path('rest-auth/', include('rest_auth.urls')),
+	    ...
+	]
+	```
+- Don't forget to migrate:
+`python manage.py migrate`
+### Setting up the Registration
+We'll be using the standard registration process.
+- You will need to install `django-allauth`:
+`pip  install  django-rest-auth[with_social]`
+- Add the following to installed apps and `SITE_ID=1`:
+	```py
+	INSTALLED_APPS = (
+	    ...,
+	    'django.contrib.sites',
+	    'allauth',
+	    'allauth.account',
+	    'allauth.socialaccount', # this comes from ## Social Authentication
+	    'rest_auth.registration',
+	)
+
+	SITE_ID = 1
+	```
+
+- Again, don't forget to migrate:
+`python manage.py migrate`
+- Add the following to urls.py (src/template/urls.py):
+```py
+urlpatterns = [
+	... 
+    path('rest-auth/registration/', include('rest_auth.registration.urls')),
+	...
+]
 ```
