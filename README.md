@@ -240,7 +240,7 @@ class ArticleViewSet(viewsets.ModelViewSet):
 ```
 ## Implemention of Sessions
 Notice: From here on, this becomes very specific and not very explanatory, the purpose here will be to implement sessions as quickly as possible.
-In this example we'll be implementing sessions with [django-rest-auth](https://django-rest-auth.readthedocs.io/en/latest/installation.html) which essentially takes the login methods that are provided by Django **allauth** and converts them to an API.
+In this example we'll be implementing sessions with [django-rest-auth](https://django-rest-auth.readthedocs.io/en/latest/installation.html) which essentially takes the login methods that are provided by Django [django-allauth](https://django-allauth.readthedocs.io/en/latest/configuration.html) and converts them to an API.
 ### Installation
 - Start off by installing the package:
 	`pip install django-rest-auth`
@@ -285,10 +285,16 @@ We'll be using the standard registration process.
 - Again, don't forget to migrate:
 `python manage.py migrate`
 - Add the following to urls.py (src/template/urls.py):
-```py
-urlpatterns = [
-	... 
-    path('rest-auth/registration/', include('rest_auth.registration.urls')),
-	...
-]
-```
+	```py
+	urlpatterns = [
+		... 
+	    path('rest-auth/registration/', include('rest_auth.registration.urls')),
+		...
+	]
+	```
+- Lastly we have to configure the django-allauth in the settings.py.
+	```py
+	ACCOUNT_EMAIL_VERIFICATION = "none"
+	ACCOUNT_AUTHENTICATION_METHOD = "username"
+	ACCOUNT_EMAIL_REQUIRED = False
+	```
