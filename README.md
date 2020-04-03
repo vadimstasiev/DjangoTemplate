@@ -76,12 +76,8 @@
 	        'rest_framework.permissions.AllowAny' # This may need to be changed back to the above, later on
 	    ]
 	}
-	# Also add the following to allow your React app at the front end to receive 
-	# JSON at the front end without throwing a CORS error
-	CORS_ORIGIN_ALLOW_ALL = True
 	```
-	
-	Then add it to the urls (in the urls file at src/template/urls.py):
+	- Then add it to the urls (in the urls file at src/template/urls.py):
 	```py
 	from django.urls import path, include # don't forget to add include
 	urlpatterns = [
@@ -90,6 +86,29 @@
 	]
 	```
 	 For this example it is created an app called `myapp` and this was also added to the template's `INSTALLED_APPS`.
+	To avoid getting the CORS error at the frontend application you must ensure that all JSON being served is including a CORS header.
+	- Install from  **pip**:
+	`pip install django-cors-headers`
+
+	- and then add it to your installed apps:
+	```py
+	INSTALLED_APPS = [
+	    ...
+	    'corsheaders',
+	    ...
+	]
+	```
+	- You will also need to add a middleware class to listen in on responses:
+	```py
+	MIDDLEWARE = [  
+	# Or MIDDLEWARE_CLASSES on Django < 1.10
+	    ...
+	    'corsheaders.middleware.CorsMiddleware',
+	    'django.middleware.common.CommonMiddleware',
+	    ...
+	]
+	```
+	
 
 	### Create and migrate model
 	In the models.py of the app that you created (in this case myapp/models.py): 
